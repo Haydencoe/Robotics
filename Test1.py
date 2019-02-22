@@ -57,10 +57,10 @@ class Robot:
         
         ################### subscribers ##############################                                   
        
-        self.rgb_sub = rospy.Subscriber("/turtlebot/camera/rgb/image_raw",
+        self.rgb_sub = rospy.Subscriber("/camera/rgb/image_raw",
                                    Image, self.rgbCallback)
         
-        self.laser_sub = rospy.Subscriber("/turtlebot/scan",
+        self.laser_sub = rospy.Subscriber("/scan",
                                           LaserScan, self.laserCallback)
        
        #################### define colour values ##################

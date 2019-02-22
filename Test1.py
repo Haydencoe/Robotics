@@ -79,7 +79,7 @@ class Robot:
         self.hsv_lower_green = numpy.array([50,100,50])
         self.hsv_upper_green = numpy.array([70,255,255])
         
-        # Blue alues
+        # Blue values
         self.hsv_lower_blue = numpy.array([110,50,50])
         self.hsv_upper_blue = numpy.array([130,255,250])
       

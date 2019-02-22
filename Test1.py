@@ -1,8 +1,10 @@
+#!/usr/bin/env python
 
-# CMP Robotics Assignment 1
-# 15595332 Hayden Coe
-
-import rospy,numpy,cv2,time,cv2.cv
+import rospy
+import numpy
+import cv2
+import time
+#import cv2.cv
 
 from sensor_msgs.msg import Image, LaserScan
 from geometry_msgs.msg import Twist, PoseStamped
@@ -55,7 +57,7 @@ class Robot:
         
         ################### subscribers ##############################                                   
        
-       self.rgb_sub = rospy.Subscriber("/turtlebot/camera/rgb/image_raw",
+        self.rgb_sub = rospy.Subscriber("/turtlebot/camera/rgb/image_raw",
                                    Image, self.rgbCallback)
         
         self.laser_sub = rospy.Subscriber("/turtlebot/scan",

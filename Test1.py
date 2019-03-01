@@ -8,7 +8,7 @@ import time
 
 from sensor_msgs.msg import Image, LaserScan
 from geometry_msgs.msg import Twist, PoseStamped
-from cv_bridge import CvBridge 
+from cv_bridge import CvBridge, CvBridgeError
 
 # colours to variable number 
 RED = 0
@@ -44,8 +44,7 @@ class Robot:
         self.finished = False
         self.defineColVals()
         self.cv_bridge = CvBridge()  
-        cv2.namedWindow("Image window", 1) 
-        cv2.startWindowThread()
+
         
          ######################## publishers ############################       
         
@@ -89,6 +88,8 @@ class Robot:
         self.laser_data = data
         
     def rgbCallback(self,data):
+        cv2.namedWindow("Image window", 1) 
+        cv2.startWindowThread()
         self.rgb_data = data
         if self.finished:
             self.depth_sub.unregister()
@@ -96,8 +97,11 @@ class Robot:
             self.cmd_vel_pub.unregister()
             print("Finished.")
             return
-            
-        self.image = self.cv_bridge.imgmsg_to_cv2(self.rgb_data,desired_encoding="bgr8")
+        try:    
+            self.image = self.cv_bridge.imgmsg_to_cv2(self.rgb_data,"bgr8")
+        except CvBridgeError,e: 
+            print e
+        
         self.image_to_hsv = cv2.cvtColor(self.image, cv2.COLOR_BGR2HSV)
 
         # Build HSV masks from range of colour values
@@ -201,11 +205,14 @@ class Robot:
             elif ((not(self.found_blue) or (self.moving_towards == BLUE)) and
                 (blue_M['m00'] > 50000.0)):
                 self.moveTowards(blue_M, BLUE)
-                
+
+            
+            
             self.cmd_vel_pub.publish(self.twist)
             cv2.imshow("Image window", self.image)
-      
-        cv2.waitKey(1)
+
+
+            cv2.waitKey(1)  
             
     def explore(self):
 
@@ -250,13 +257,13 @@ class Robot:
     def moveTowards(self, M, colour):
         
         if not (self.moving_towards == colour):
-                #print("at least one of the colours was found...")
+                print("at least one of the colours was found...")
                 self.cmd_vel_pub.publish(self.twist)
                 self.twist.angular.z = 0.0
                 self.twist.linear.x = 0.0
         print(str(colour) + " is seen: " ) ### prints to screen### 
         if M['m00'] < 10000000.0:
-            #print(str(colour) + " < 2500000.0")
+            print(str(colour) + " < 2500000.0")
             self.moving_towards = colour
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
@@ -271,7 +278,7 @@ class Robot:
     def setFound(self, colour):
         if colour == 0: # simple if statements defining what happens when a certain colour is reached 
             self.found_red = True # if found_red set value to true flag 
-            print "Cool ive found Red" # print to screen statement 
+            print "Cool i've found Red" # print to screen statement 
             self.twist.linear.x = 0.0 # found colour sends twist motion 
             #self.twist.angular.z = 0.0
             self.moving_towards = None # if moving_towards flag set
@@ -326,3 +333,4 @@ rospy.init_node("rgb_converter")
 Robot()
 rospy.spin()
 cv2.destroyAllWindows()
+

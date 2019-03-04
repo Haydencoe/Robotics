@@ -51,8 +51,8 @@ class Robot:
         self.goal_pub = rospy.Publisher('/move_base_simple/goal',
                                                PoseStamped, queue_size=1) 
         
-        self.cmd_vel_pub = rospy.Publisher("/cmd_vel",
-                                           Twist, queue_size=10)
+        self.cmd_vel_pub = rospy.Publisher("/cmd_vel_mux/input/teleop",
+                                           Twist, queue_size=1)
         
         ################### subscribers ##############################                                   
        
@@ -191,7 +191,7 @@ class Robot:
         if (sum(moments_list) > 0.0):
             
             if ((not(self.found_red) or (self.moving_towards == RED)) and
-                (red_M['m00'] > 50000.0)):
+                (red_M['m00'] > 500000.0)):
                 self.moveTowards(red_M, RED)
                 
             elif ((not(self.found_green) or (self.moving_towards == GREEN)) and
@@ -257,13 +257,13 @@ class Robot:
     def moveTowards(self, M, colour):
         
         if not (self.moving_towards == colour):
-                print("at least one of the colours was found...")
+             #   print("at least one of the colours was found...")
                 self.cmd_vel_pub.publish(self.twist)
                 self.twist.angular.z = 0.0
                 self.twist.linear.x = 0.0
         print(str(colour) + " is seen: " ) ### prints to screen### 
         if M['m00'] < 10000000.0:
-            print(str(colour) + " < 2500000.0")
+            #print(str(colour) + " < 2500000.0")
             self.moving_towards = colour
             cx = int(M['m10']/M['m00'])
             cy = int(M['m01']/M['m00'])
@@ -319,7 +319,7 @@ class Robot:
 #            
     def goal_pose(self, pose):
             next_goal = PoseStamped()
-            next_goal.header.frame_id = '/map'
+            next_goal.header.frame_id = 'map'
             next_goal.pose.position.x = pose[0][0]
             next_goal.pose.position.y = pose[0][1]
             next_goal.pose.position.z = pose[0][2]

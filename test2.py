@@ -1,6 +1,3 @@
-"""
-15595322 Stephen Trevor
-"""
 import rospy,numpy,cv2,time,cv2.cv
 
 from sensor_msgs.msg import Image, LaserScan

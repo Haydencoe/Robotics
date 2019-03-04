@@ -1,12 +1,5 @@
 #!/usr/bin/env/python
 
-'''
-    File Name: Main.py
-    Author: Adam Walker
-    Date Created: 14/03/2017
-    Date Last Modified: 22/03/2017
-    Python Version: 2.7
-'''
 
 import rospy, cv2, cv_bridge, numpy, math
 from sensor_msgs.msg import Image
@@ -21,13 +14,14 @@ class Follower:
         self.bridge = cv_bridge.CvBridge()
         cv2.namedWindow("window", 1)
         cv2.namedWindow("mask", 1)
-        self.image_sub = rospy.Subscriber('/turtlebot/camera/rgb/image_raw',
+        
+        self.image_sub = rospy.Subscriber('/camera/rgb/image_raw',
                                           Image, self.image_callback)
 
-        self.laser_sub = rospy.Subscriber('/turtlebot/scan',
+        self.laser_sub = rospy.Subscriber('/scan',
                                           LaserScan, self.laser_callback)
 
-        self.cmd_vel_pub = rospy.Publisher('/turtlebot/cmd_vel',
+        self.cmd_vel_pub = rospy.Publisher('/cmd_vel_mux/input/teleop',
                                            Twist, queue_size=1)
 
         self.twist = Twist()
